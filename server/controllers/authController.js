@@ -9,13 +9,21 @@ const generateToken = (user) => {
   );
 };
 
-export const register = async (req, res) => {
-  const { name, email, password, role } = req.body;
+export const register = async (req, res) => {  const { name, email, password, role, specialization } = req.body;
   try {
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ msg: 'User already exists' });
 
-    const user = await User.create({ name, email, password, role });
+    // Create user data object
+    const userData = { name, email, password, role };
+    if (role === 'doctor') {
+      if (!specialization) {
+        return res.status(400).json({ msg: 'Specialization is required for doctors' });
+      }
+      userData.specialization = specialization;
+    }
+
+    const user = await User.create(userData);
     const token = generateToken(user);
 
     res.status(201).json({ token, user: { id: user._id, name: user.name, role: user.role } });

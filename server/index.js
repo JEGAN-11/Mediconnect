@@ -22,6 +22,9 @@ app.use(express.json()); // For JSON body parsing
 app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.get('/', (req, res) => {
+  res.send('MediConnect API is running...');
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
