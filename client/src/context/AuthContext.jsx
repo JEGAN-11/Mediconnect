@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -9,12 +10,21 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const navigate = useNavigate ? useNavigate() : null;
 
   const login = (userData, tokenValue) => {
     setUser(userData);
     setToken(tokenValue);
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', tokenValue);
+    // Role-based redirect
+    if (userData.role === 'admin') {
+      window.location.href = '/admin';
+    } else if (userData.role === 'doctor') {
+      window.location.href = '/doctor-dashboard';
+    } else {
+      window.location.href = '/dashboard';
+    }
   };
 
   const logout = () => {
@@ -22,6 +32,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    window.location.href = '/';
   };
 
   return (

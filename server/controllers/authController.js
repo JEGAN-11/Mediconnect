@@ -34,9 +34,10 @@ export const register = async (req, res) => {  const { name, email, password, ro
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
   try {
-    const user = await User.findOne({ email });
+    // Find user by email and (if provided) role
+    const user = await User.findOne(role ? { email, role } : { email });
     if (!user) return res.status(401).json({ msg: 'Invalid credentials' });
 
     const isMatch = await user.matchPassword(password);

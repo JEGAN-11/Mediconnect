@@ -122,16 +122,17 @@ const Navbar = () => {
                     <div className="flex items-center space-x-4">
                       <button
                         onClick={() => openModal('login')}
-                        className="rounded-md bg-white px-4 py-2 text-sm font-medium text-secondary-700 ring-1 ring-inset ring-secondary-200 hover:bg-secondary-50 hover:ring-secondary-300 transition-all duration-200"
+                        className="rounded-md px-4 py-2 text-sm font-medium border border-black bg-white text-primary-700 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:shadow-lg transition-all duration-200 shadow-sm focus:outline-none"
                       >
                         Sign in
                       </button>
-                      <button
-                        onClick={() => openModal('register')}
-                        className="rounded-md bg-gradient-to-r from-secondary-500 to-primary-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-secondary-600 hover:to-primary-600 transform hover:-translate-y-0.5 transition-all duration-200"
+                      <Link
+                        to="/register"
+                        className="rounded-md px-4 py-2 text-sm font-medium border border-primary-600 bg-primary-500 text-white shadow-sm hover:bg-white hover:text-primary-600 hover:border-primary-600 hover:shadow-lg transition-all duration-200 focus:outline-none"
+                        style={{ minWidth: 90 }}
                       >
                         Sign up
-                      </button>
+                      </Link>
                     </div>
                     <AuthModal
                       isOpen={showAuthModal}

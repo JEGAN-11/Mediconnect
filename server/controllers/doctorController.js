@@ -1,9 +1,30 @@
 import Doctor from '../models/Doctor.js';
+import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
 export const createDoctor = async (req, res) => {
   try {
-    const doctor = await Doctor.create(req.body);
-    res.status(201).json(doctor);
+    // Check if doctor email already exists in User collection
+    const { name, specialization, experience, contact, availability, email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ msg: 'Doctor email and password are required' });
+    }
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ msg: 'A user with this email already exists' });
+    }
+    // Create doctor in Doctor collection
+    const doctor = await Doctor.create({ name, specialization, experience, contact, availability });
+    // Create doctor in User collection for authentication
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'doctor',
+      specialization
+    });
+    res.status(201).json({ doctor, user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Error creating doctor' });
