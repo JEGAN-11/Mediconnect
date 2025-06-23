@@ -42,7 +42,7 @@ export const getAllAppointments = async (req, res) => {
     res.status(500).json({ msg: 'Error fetching all appointments' });
   }
 };
-
+//asdfg
 export const markAppointmentCompleted = async (req, res) => {
   try {
     const appointment = await Appointment.findByIdAndUpdate(
