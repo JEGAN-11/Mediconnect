@@ -54,6 +54,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
             : 'User Login'}
         </span>
       }
+      overlayClassName="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center"
     >
       <div className="mt-4">
         {/* Stronger hover effects for login role selector */}
@@ -87,7 +88,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
           </button>
         </div>
         {error && (
-          <div className="mb-6 p-4 bg-primary-50/50 border border-primary-200 text-primary-800 text-sm rounded-lg backdrop-blur-sm">
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 text-sm rounded-lg shadow-sm">
             {error}
           </div>
         )}
@@ -132,6 +133,18 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
             </button>
           </div>
         </form>
+        {/* User only: show sign up link */}
+        {mode === 'login' && (
+          <div className="mt-4 text-center">
+            <span className="text-sm text-gray-600">Don't have an account? </span>
+            <a
+              href="/register"
+              className="text-primary-600 hover:underline font-medium text-sm"
+            >
+              Sign up
+            </a>
+          </div>
+        )}
       </div>
     </Modal>
   );

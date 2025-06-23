@@ -70,19 +70,19 @@ const Home = () => {
               <div className="mt-10 flex items-center lg:justify-start justify-center gap-x-6">
                 {!user ? (
                   <>
-                    <button
-                      onClick={() => window.openAuthModal?.('register')}
+                    <Link
+                      to="/register"
                       className="rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-primary-500/25 hover:from-primary-600 hover:to-secondary-600 hover:shadow-primary-500/35 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transform hover:-translate-y-0.5"
                     >
                       Get started
                       <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span>
-                    </button>
-                    <button
-                      onClick={() => window.openAuthModal?.('login')}
+                    </Link>
+                    <Link
+                      to="/login"
                       className="text-base font-semibold leading-6 text-primary-600 px-6 py-4 rounded-full border-2 border-primary-500 bg-white hover:bg-primary-50 hover:border-primary-600 hover:text-primary-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-300 transform hover:-translate-y-0.5"
                     >
                       Sign in <span aria-hidden="true" className="ml-1 inline-block transition-transform group-hover:translate-x-1">→</span>
-                    </button>
+                    </Link>
                   </>
                 ) : (
                   <Link
@@ -140,14 +140,6 @@ const Home = () => {
             </dl>
           </div>
         </div>
-      </div>
-      <div className="mt-8 flex justify-center">
-        <Link
-          to="/register"
-          className="inline-block px-8 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-lg font-semibold rounded-lg shadow-lg hover:from-primary-600 hover:to-secondary-600 transition-all duration-300"
-        >
-          Sign Up
-        </Link>
       </div>
     </div>
   );

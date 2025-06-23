@@ -120,15 +120,16 @@ const Navbar = () => {
                 {!user ? (
                   <>
                     <div className="flex items-center space-x-4">
-                      <button
-                        onClick={() => openModal('login')}
-                        className="rounded-md px-4 py-2 text-sm font-medium border border-black bg-white text-primary-700 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:shadow-lg transition-all duration-200 shadow-sm focus:outline-none"
+                      <Link
+                        to="/login"
+                        className="rounded-md px-4 py-2 text-sm font-medium border border-black bg-primary-100 text-primary-700 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:shadow-lg transition-all duration-200 shadow-sm focus:outline-none"
+                        style={{ minWidth: 90 }}
                       >
                         Sign in
-                      </button>
+                      </Link>
                       <Link
                         to="/register"
-                        className="rounded-md px-4 py-2 text-sm font-medium border border-primary-600 bg-primary-500 text-white shadow-sm hover:bg-white hover:text-primary-600 hover:border-primary-600 hover:shadow-lg transition-all duration-200 focus:outline-none"
+                        className="rounded-md px-4 py-2 text-sm font-medium border border-primary-600 bg-primary-500 text-white shadow-sm hover:bg-primary-100 hover:text-primary-700 hover:border-primary-600 hover:shadow-lg transition-all duration-200 focus:outline-none"
                         style={{ minWidth: 90 }}
                       >
                         Sign up
@@ -154,18 +155,20 @@ const Navbar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-xl bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="px-4 py-2 border-b border-gray-100">
-                          <p className="text-sm text-gray-500">Signed in as</p>
-                          <p className="text-sm font-medium text-gray-900 truncate">{user.role}</p>
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-2xl bg-white/95 shadow-2xl ring-1 ring-black/10 focus:outline-none border border-gray-100">
+                        <div className="px-5 py-3 border-b border-gray-100 rounded-t-2xl bg-gradient-to-r from-primary-50 to-secondary-50">
+                          <p className="text-xs text-gray-500">Signed in as</p>
+                          <p className="text-base font-semibold text-primary-700 truncate capitalize">{user.role}</p>
                         </div>
                         <Menu.Item>
                           {({ active }) => (
                             <button
                               onClick={handleLogout}
                               className={classNames(
-                                active ? 'bg-gray-50 text-primary-600' : 'text-gray-700',
-                                'w-full text-left block px-4 py-2 text-sm transition-colors duration-150'
+                                active
+                                  ? 'bg-gradient-to-r from-primary-600 to-secondary-600 border border-black text-white'
+                                  : 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white border border-transparent',
+                                'w-full text-left block px-5 py-3 text-base font-medium rounded-b-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500'
                               )}
                             >
                               Sign out
