@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import DoctorProfile from './DoctorProfile';
 
 export default function DoctorDashboard() {
   const [stats, setStats] = useState({
@@ -9,6 +10,7 @@ export default function DoctorDashboard() {
     completedAppointments: 0,
   });
   const { user } = useAuth();
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -24,6 +26,18 @@ export default function DoctorDashboard() {
 
     fetchStats();
   }, []);
+
+  useEffect(() => {
+    // Check if doctor profile is incomplete (e.g., no experience or availability)
+    if (user?.role === 'doctor' && (!user.experience || !user.availability)) {
+      setShowProfile(true);
+    }
+  }, [user]);
+
+  if (showProfile) {
+    return <DoctorProfile onComplete={() => setShowProfile(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-full px-4 sm:px-6 lg:px-8 py-8">
@@ -31,6 +45,9 @@ export default function DoctorDashboard() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
             Welcome Dr. {user?.name}
           </h1>
+          {user?.specialization && (
+            <p className="mt-1 text-lg text-secondary-600 font-semibold">{user.specialization}</p>
+          )}
           <p className="mt-2 text-gray-600">Here's an overview of your practice</p>
         </div>        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <div className="bg-white overflow-hidden shadow-sm rounded-2xl hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">

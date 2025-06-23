@@ -8,7 +8,7 @@ const appointmentSchema = new mongoose.Schema(
     time: { type: String, required: true }, // e.g., "10:00 AM"
     status: {
       type: String,
-      enum: ['Pending', 'Confirmed', 'Cancelled'],
+      enum: ['Pending', 'Confirmed', 'Cancelled', 'Completed'],
       default: 'Pending'
     }
   },

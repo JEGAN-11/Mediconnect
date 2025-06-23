@@ -2,7 +2,8 @@ import express from 'express';
 import {
   bookAppointment,
   getUserAppointments,
-  getAllAppointments
+  getAllAppointments,
+  markAppointmentCompleted
 } from '../controllers/appointmentController.js';
 
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
@@ -15,5 +16,8 @@ router.get('/my', protect, getUserAppointments);
 
 // Admin route
 router.get('/', protect, adminOnly, getAllAppointments);
+
+// Mark appointment as completed
+router.patch('/:id/complete', protect, markAppointmentCompleted);
 
 export default router;

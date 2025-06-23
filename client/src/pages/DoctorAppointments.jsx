@@ -5,6 +5,8 @@ import { CalendarIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/
 export default function DoctorAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [upcoming, setUpcoming] = useState([]);
+  const [completed, setCompleted] = useState([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -13,6 +15,8 @@ export default function DoctorAppointments() {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setAppointments(response.data);
+        setUpcoming(response.data.filter((a) => a.status !== 'Completed'));
+        setCompleted(response.data.filter((a) => a.status === 'Completed'));
       } catch (error) {
         console.error('Error fetching appointments:', error);
       } finally {
@@ -37,6 +41,15 @@ export default function DoctorAppointments() {
     } catch (error) {
       console.error('Error updating appointment:', error);
     }
+  };
+
+  const markCompleted = async (id) => {
+    const token = localStorage.getItem('token');
+    await axios.patch(`/appointments/${id}/complete`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setUpcoming(upcoming.filter((a) => a._id !== id));
+    setCompleted([...completed, upcoming.find((a) => a._id === id)]);
   };
 
   if (loading) {
@@ -71,54 +84,20 @@ export default function DoctorAppointments() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {appointments.map((appointment) => (
-              <div key={appointment._id} 
-                className="bg-white/95 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 border border-gray-200/50 backdrop-blur-xl w-full">
-                <div className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center ring-2 ring-white shadow-lg">
-                        <CalendarIcon className="h-7 w-7 text-primary-600" />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-lg font-semibold text-gray-900 truncate">
-                        {appointment.patient.name}
-                      </h4>
-                      <div className="mt-2 flex flex-col space-y-1">
-                        <p className="text-sm text-primary-600 font-medium">
-                          {new Date(appointment.date).toLocaleDateString(undefined, { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Time: {new Date(appointment.date).toLocaleTimeString(undefined, {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-6 flex justify-end space-x-3">
-                    <button
-                      onClick={() => updateAppointmentStatus(appointment._id, 'confirmed')}
-                      className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:-translate-y-0.5"
-                    >
-                      <CheckCircleIcon className="h-5 w-5 mr-2" />
-                      Confirm
-                    </button>
-                    <button
-                      onClick={() => updateAppointmentStatus(appointment._id, 'cancelled')}
-                      className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:-translate-y-0.5"
-                    >
-                      <XCircleIcon className="h-5 w-5 mr-2" />
-                      Cancel
-                    </button>
-                  </div>
+              <div key={appointment._id} className="bg-white rounded-2xl shadow-sm mb-4 p-6 flex items-center justify-between">
+                <div>
+                  <h4 className="text-lg font-medium text-gray-900">{appointment.user.name}</h4>
+                  <p className="text-sm text-gray-500">{appointment.date} at {appointment.time}</p>
                 </div>
+                {upcoming.includes(appointment) && (
+                  <button
+                    onClick={() => markCompleted(appointment._id)}
+                    className="ml-4 px-4 py-2 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600 transition-all duration-200"
+                  >
+                    Mark as Completed
+                  </button>
+                )}
+                <CalendarIcon className="h-6 w-6 text-primary-600 ml-2" />
               </div>
             ))}
           </div>

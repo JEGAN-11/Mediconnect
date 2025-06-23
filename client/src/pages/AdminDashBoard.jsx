@@ -3,6 +3,7 @@ import API from '../api/api';
 
 const AdminDashboard = () => {
   const [doctors, setDoctors] = useState([]);
+  const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     name: '',
     specialization: '',
@@ -22,8 +23,17 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchUsers = async () => {
+    const token = localStorage.getItem('token');
+    const res = await API.get('/auth/users', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setUsers(res.data);
+  };
+
   useEffect(() => {
     fetchDoctors();
+    fetchUsers();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -81,6 +91,15 @@ const AdminDashboard = () => {
     } catch (err) {
       alert('Failed to delete');
     }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm('Delete this user?')) return;
+    const token = localStorage.getItem('token');
+    await API.delete(`/auth/users/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchUsers();
   };
 
   return (
@@ -167,6 +186,17 @@ const AdminDashboard = () => {
           </div>
         ))}
       </div>
+
+      {/* Users List */}
+      <h2 className="text-xl font-semibold mb-4">All Users</h2>
+      <ul className="divide-y divide-gray-200 mb-8">
+        {users.map((user) => (
+          <li key={user._id} className="py-2 flex justify-between items-center">
+            <span>{user.name} - {user.email}</span>
+            <button onClick={() => handleDeleteUser(user._id)} className="px-3 py-1 bg-red-600 text-white rounded">Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

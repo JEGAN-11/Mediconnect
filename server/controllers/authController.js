@@ -44,7 +44,7 @@ export const login = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.status(200).json({ token, user: { id: user._id, name: user.name, role: user.role } });
+    res.status(200).json({ token, user: { id: user._id, name: user.name, role: user.role, specialization: user.specialization } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Login failed' });
@@ -59,5 +59,22 @@ export const getUserProfile = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Error fetching user profile' });
+  }
+};
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: 'user' }).select('-password');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error fetching users' });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ msg: 'User deleted' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error deleting user' });
   }
 };

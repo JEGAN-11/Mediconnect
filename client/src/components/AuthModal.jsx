@@ -27,7 +27,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
     try {
       if (mode === 'login') {
         const res = await axios.post('http://localhost:5000/api/auth/login', {
@@ -36,6 +35,18 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         });
         login(res.data.user, res.data.token);
         onClose();
+      } else if (mode === 'admin') {
+        const res = await axios.post('http://localhost:5000/api/auth/login', {
+          email: form.email,
+          password: form.password,
+        });
+        if (res.data.user.role === 'admin') {
+          login(res.data.user, res.data.token);
+          onClose();
+          window.location.href = '/admin';
+        } else {
+          setError('Not an admin account');
+        }
       } else {
         const registerData = { ...form };
         if (registerData.role !== 'doctor') {
@@ -74,6 +85,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
       }
     >
       <div className="mt-4">
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setMode('login')}
+            className={`px-4 py-2 rounded-l-lg text-sm font-medium border border-primary-500 focus:outline-none ${mode === 'login' ? 'bg-primary-500 text-white' : 'bg-white text-primary-600'}`}
+          >
+            User Login
+          </button>
+          <button
+            onClick={() => setMode('admin')}
+            className={`px-4 py-2 rounded-r-lg text-sm font-medium border border-primary-500 focus:outline-none ${mode === 'admin' ? 'bg-primary-500 text-white' : 'bg-white text-primary-600'}`}
+          >
+            Admin Login
+          </button>
+        </div>
         {error && (
           <div className="mb-6 p-4 bg-primary-50/50 border border-primary-200 text-primary-800 text-sm rounded-lg backdrop-blur-sm">
             {error}
@@ -82,111 +107,75 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {mode === 'register' && (
+            <>
+              {/* Only allow user registration, remove doctor/admin options */}
+              <input type="hidden" name="role" value="user" />
+            </>
+          )}
+          {mode === 'admin' && (
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Admin Email
               </label>
               <input
-                id="name"
-                name="name"
-                type="text"
+                id="email"
+                name="email"
+                type="email"
                 required
-                value={form.name}
+                value={form.email}
                 onChange={handleChange}
                 className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 sm:text-sm"
-                placeholder="John Doe"
+                placeholder="admin@mediconnect.com"
+              />
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={form.password}
+                onChange={handleChange}
+                className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 sm:text-sm"
+                placeholder="••••••••"
               />
             </div>
           )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 sm:text-sm"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={form.password}
-              onChange={handleChange}
-              className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 sm:text-sm"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {mode === 'register' && (
+          {mode !== 'admin' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  I am registering as
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email address
                 </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setForm({ ...form, role: 'user', specialization: '' })}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:-translate-y-0.5 ${
-                      form.role === 'user'
-                        ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40'
-                        : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary-200 hover:bg-primary-50/50'
-                    }`}
-                  >
-                    Patient
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setForm({ ...form, role: 'doctor' })}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:-translate-y-0.5 ${
-                      form.role === 'doctor'
-                        ? 'bg-gradient-to-r from-secondary-500 to-primary-500 text-white shadow-lg shadow-secondary-500/30 hover:shadow-xl hover:shadow-secondary-500/40'
-                        : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-secondary-200 hover:bg-secondary-50/50'
-                    }`}
-                  >
-                    Doctor
-                  </button>
-                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 sm:text-sm"
+                  placeholder="you@example.com"
+                />
               </div>
 
-              {form.role === 'doctor' && (
-                <div>
-                  <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">
-                    Specialization
-                  </label>
-                  <select
-                    id="specialization"
-                    name="specialization"
-                    required={form.role === 'doctor'}
-                    value={form.specialization}
-                    onChange={handleChange}
-                    className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 sm:text-sm"
-                  >
-                    <option value="">Select Specialization</option>
-                    <option value="Cardiologist">Cardiologist</option>
-                    <option value="Dermatologist">Dermatologist</option>
-                    <option value="Pediatrician">Pediatrician</option>
-                    <option value="Neurologist">Neurologist</option>
-                    <option value="Orthopedic">Orthopedic</option>
-                    <option value="Psychiatrist">Psychiatrist</option>
-                    <option value="General Physician">General Physician</option>
-                  </select>
-                </div>
-              )}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={form.password}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 sm:text-sm"
+                  placeholder="••••••••"
+                />
+              </div>
             </>
           )}
 

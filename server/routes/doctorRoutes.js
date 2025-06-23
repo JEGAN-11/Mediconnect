@@ -3,7 +3,8 @@ import {
   createDoctor,
   getAllDoctors,     // ✅ use the correct name
   deleteDoctor,
-  updateDoctor
+  updateDoctor,
+  updateDoctorProfile
 } from '../controllers/doctorController.js';
 
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
@@ -17,5 +18,8 @@ router.get('/', getAllDoctors);
 router.post('/', protect, adminOnly, createDoctor);
 router.put('/:id', protect, adminOnly, updateDoctor);
 router.delete('/:id', protect, adminOnly, deleteDoctor);
+
+// Doctor updates their own profile
+router.put('/profile', protect, updateDoctorProfile);
 
 export default router;

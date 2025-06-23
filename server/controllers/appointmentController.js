@@ -42,3 +42,17 @@ export const getAllAppointments = async (req, res) => {
     res.status(500).json({ msg: 'Error fetching all appointments' });
   }
 };
+
+export const markAppointmentCompleted = async (req, res) => {
+  try {
+    const appointment = await Appointment.findByIdAndUpdate(
+      req.params.id,
+      { status: 'Completed' },
+      { new: true }
+    );
+    if (!appointment) return res.status(404).json({ msg: 'Appointment not found' });
+    res.json(appointment);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error marking appointment as completed' });
+  }
+};

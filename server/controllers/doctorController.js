@@ -42,3 +42,20 @@ export const deleteDoctor = async (req, res) => {
     res.status(500).json({ msg: 'Error deleting doctor' });
   }
 };
+
+export const updateDoctorProfile = async (req, res) => {
+  try {
+    const doctor = await Doctor.findOneAndUpdate(
+      { _id: req.user.id },
+      {
+        experience: req.body.experience,
+        availability: req.body.availability,
+      },
+      { new: true }
+    );
+    if (!doctor) return res.status(404).json({ msg: 'Doctor not found' });
+    res.json(doctor);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error updating doctor profile' });
+  }
+};
