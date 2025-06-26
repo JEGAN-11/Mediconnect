@@ -11,6 +11,8 @@ const AdminDashboard = () => {
     contact: '',
     availabilityDays: '',
     availabilityTime: '',
+    email: '',
+    password: '',
   });
   const [editingId, setEditingId] = useState(null);
 
@@ -48,6 +50,8 @@ const AdminDashboard = () => {
         days: form.availabilityDays.split(',').map((d) => d.trim()),
         time: form.availabilityTime,
       },
+      email: form.email,
+      password: form.password,
     };
 
     try {
@@ -64,10 +68,13 @@ const AdminDashboard = () => {
         contact: '',
         availabilityDays: '',
         availabilityTime: '',
+        email: '',
+        password: '',
       });
       fetchDoctors();
     } catch (err) {
-      alert('Error saving doctor');
+      const backendMsg = err.response?.data?.error || err.response?.data?.msg || err.message || 'Error saving doctor';
+      alert(backendMsg);
     }
   };
 
@@ -79,6 +86,8 @@ const AdminDashboard = () => {
       contact: doc.contact,
       availabilityDays: doc.availability?.days?.join(', ') || '',
       availabilityTime: doc.availability?.time || '',
+      email: doc.email || '',
+      password: '', // Don't pre-fill password
     });
     setEditingId(doc._id);
   };
@@ -135,6 +144,21 @@ const AdminDashboard = () => {
           className="p-2 border"
           value={form.contact}
           onChange={(e) => setForm({ ...form, contact: e.target.value })}
+          required
+        />
+        <input
+          placeholder="Email"
+          className="p-2 border"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="p-2 border"
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
         />
         <input

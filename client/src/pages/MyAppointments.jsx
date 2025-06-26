@@ -8,7 +8,7 @@ export default function MyAppointments() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    API.get('/appointments', {
+    API.get('/appointments/my', {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
@@ -56,7 +56,7 @@ export default function MyAppointments() {
                   <CalendarIcon className="h-6 w-6 text-primary-600 ml-2" />
                 </div>
               ))
-            )}
+            }
           </div>
           <div>
             <h2 className="text-xl font-semibold mb-4 text-secondary-700">Completed Appointments</h2>

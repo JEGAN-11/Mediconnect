@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin', 'doctor'], default: 'user' },
-    specialization: { type: String, required: function() { return this.role === 'doctor'; } }
+    specialization: { type: String, required: function() { return this.role === 'doctor'; } },
+    doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', required: function() { return this.role === 'doctor'; }, default: null }
   },
   { timestamps: true }
 );

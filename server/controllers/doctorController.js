@@ -4,7 +4,6 @@ import bcrypt from 'bcryptjs';
 
 export const createDoctor = async (req, res) => {
   try {
-    // Check if doctor email already exists in User collection
     const { name, specialization, experience, contact, availability, email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ msg: 'Doctor email and password are required' });
@@ -15,19 +14,19 @@ export const createDoctor = async (req, res) => {
     }
     // Create doctor in Doctor collection
     const doctor = await Doctor.create({ name, specialization, experience, contact, availability });
-    // Create doctor in User collection for authentication
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Create user for authentication, referencing the doctor
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password, // Do NOT hash here, let the schema pre-save hook handle it
       role: 'doctor',
-      specialization
+      specialization,
+      doctorId: doctor._id // Add reference to doctor
     });
     res.status(201).json({ doctor, user });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: 'Error creating doctor' });
+    console.error('Error creating doctor:', err); // Log the real error
+    res.status(500).json({ msg: 'Error creating doctor', error: err.message }); // Send error message to frontend
   }
 };
 
@@ -36,7 +35,7 @@ export const getAllDoctors = async (req, res) => {
     const doctors = await Doctor.find();
     res.json(doctors);
   } catch (err) {
-    res.status(500).json({ msg: 'Error fetching doctors' });
+    res.status(500).json({ msg: 'Error fetching doctors', error: err.message });
   }
 };
 
@@ -49,18 +48,22 @@ export const updateDoctor = async (req, res) => {
 
     res.json(doctor);
   } catch (err) {
-    res.status(500).json({ msg: 'Error updating doctor' });
+    res.status(500).json({ msg: 'Error updating doctor', error: err.message });
   }
 };
 
 export const deleteDoctor = async (req, res) => {
   try {
+    // Delete the doctor document
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
     if (!doctor) return res.status(404).json({ msg: 'Doctor not found' });
 
-    res.json({ msg: 'Doctor deleted' });
+    // Delete the associated user document
+    await User.findOneAndDelete({ doctorId: req.params.id });
+
+    res.json({ msg: 'Doctor and associated user deleted' });
   } catch (err) {
-    res.status(500).json({ msg: 'Error deleting doctor' });
+    res.status(500).json({ msg: 'Error deleting doctor', error: err.message });
   }
 };
 
@@ -77,6 +80,6 @@ export const updateDoctorProfile = async (req, res) => {
     if (!doctor) return res.status(404).json({ msg: 'Doctor not found' });
     res.json(doctor);
   } catch (err) {
-    res.status(500).json({ msg: 'Error updating doctor profile' });
+    res.status(500).json({ msg: 'Error updating doctor profile', error: err.message });
   }
 };

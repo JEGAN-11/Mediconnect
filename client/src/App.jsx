@@ -2,13 +2,14 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Dashboard from './pages/UserDashboard';
 import Doctors from './pages/Doctors';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/AdminDashBoard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import DoctorAppointments from './pages/DoctorAppointments';
 import HomeRedirect from './components/HomeRedirect';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import RegisterModal from './pages/RegisterModal';
+import BookAppointment from './pages/BookAppointment';
 
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/doctor-dashboard" element={<PrivateRoute><DoctorDashboard /></PrivateRoute>} />
           <Route path="/doctor-appointments" element={<PrivateRoute><DoctorAppointments /></PrivateRoute>} />
+          <Route path="/book/:doctorId" element={<PrivateRoute><BookAppointment /></PrivateRoute>} />
           <Route path="*" element={<HomeRedirect />} />
         </Routes>
       </main>

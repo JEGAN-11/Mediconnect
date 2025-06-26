@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from '../api/api';
 import { useAuth } from '../context/AuthContext';
 import DoctorProfile from './DoctorProfile';
 
@@ -15,9 +15,7 @@ export default function DoctorDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/doctors/stats', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await API.get('/appointments/doctor/stats');
         setStats(response.data);
       } catch (error) {
         console.error('Error fetching doctor stats:', error);

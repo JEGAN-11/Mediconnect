@@ -43,9 +43,26 @@ export const login = async (req, res) => {
     const isMatch = await user.matchPassword(password);
     if (!isMatch) return res.status(401).json({ msg: 'Invalid credentials' });
 
+    let doctorProfile = null;
+    if (user.role === 'doctor' && user.doctorId) {
+      const Doctor = (await import('../models/Doctor.js')).default;
+      doctorProfile = await Doctor.findById(user.doctorId);
+    }
+
     const token = generateToken(user);
 
-    res.status(200).json({ token, user: { id: user._id, name: user.name, role: user.role, specialization: user.specialization } });
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+        specialization: user.specialization,
+        experience: doctorProfile?.experience || null,
+        availability: doctorProfile?.availability || null,
+        contact: doctorProfile?.contact || null
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Login failed' });

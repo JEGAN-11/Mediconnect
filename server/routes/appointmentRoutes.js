@@ -3,7 +3,12 @@ import {
   bookAppointment,
   getUserAppointments,
   getAllAppointments,
-  markAppointmentCompleted
+  markAppointmentCompleted,
+  deleteAppointment,
+  getDoctorAppointments,
+  getDoctorStats,
+  rescheduleAppointment,
+  rescheduleAppointmentByUser
 } from '../controllers/appointmentController.js';
 
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
@@ -19,5 +24,16 @@ router.get('/', protect, adminOnly, getAllAppointments);
 
 // Mark appointment as completed
 router.patch('/:id/complete', protect, markAppointmentCompleted);
+
+// Delete appointment (user or doctor)
+router.delete('/:id', protect, deleteAppointment);
+
+// Doctor routes
+router.get('/doctor', protect, getDoctorAppointments);
+router.get('/doctor/stats', protect, getDoctorStats);
+router.patch('/:id/reschedule', protect, rescheduleAppointment);
+
+// User reschedule appointment
+router.patch('/:id/user-reschedule', protect, rescheduleAppointmentByUser);
 
 export default router;
